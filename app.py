@@ -5,7 +5,7 @@ from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 
 from flask import Flask, render_template, redirect, url_for, request
-
+from nltk_depression import greeting,response
 import emoji
 import pandas as pd
 
@@ -39,7 +39,6 @@ def get_tweets(api, query, c):
 
     # create DataFrame
     m = []
-    columns = ['User', 'Tweet']
     data = []
     x = []
     for tweet in tweets:
@@ -48,7 +47,7 @@ def get_tweets(api, query, c):
         data.append([tweet.user.screen_name, j])
         x.append(j)
 
-    df = pd.DataFrame(data, columns=columns)
+    
 
     po = ne = n = 0 # positive, negative, neutral variable =0
     for text in x:
@@ -79,15 +78,20 @@ def home():
     return render_template("index.html")
 
 @app.route('/psychometric')
-def psychometric():
-  return render_template("psychometric.html")
+def qna():
+  return render_template("qna.html")
 
 
 @app.route('/wellbeing')
-def wellbeing():
-  return render_template("wellbeing.html")
+def updates():
+  return render_template("updates.html")
 
 #Chatbot using NLTK
+#Reading in the corpus
+xls = pd.read_excel(r"QNA.xlsx") #use r before absolute file path
+
+xls = xls.applymap(str)
+@app.route("/chat")
 def index():
 	return render_template("index1.html",template_folder='templates')
 @app.route("/get", methods=["GET","POST"])
