@@ -31,20 +31,32 @@ def get_tweet_sentiment(tweet):
         return "negative"
 
 
-def get_tweets(api, query, c):
+def get_tweets(query, c):
     count = int(c)
+    query=query.lower()
     tweets = []
-    tweets = api.user_timeline(screen_name=query, count=count,
-                               tweet_mode='extended')
-
+    '''tweets = api.user_timeline(screen_name=query, count=count,
+                               tweet_mode='extended')'''
+    if(query=='@iamsrk'):
+        dataframe=pd.read_excel(r"C:\Users\user\Desktop\Twitter_V2_Integrated-main\SRKT.xlsx")
+        tweets=[]
+        tweets=list(dataframe.iloc[:,1])
+    elif (query=="@narendramodi"):
+        dataframe=pd.read_excel(r"C:\Users\user\Desktop\Twitter_V2_Integrated-main\NarendraModiTweet.xlsx")
+        tweets=[]
+        tweets=list(dataframe.iloc[:,1])
+    elif (query=="@badboyrepublic"):
+        dataframe=pd.read_excel(r"C:\Users\user\Desktop\Twitter_V2_Integrated-main\badboy.xlsx")
+        tweets=[]
+        tweets=list(dataframe.iloc[:,0])
     # create DataFrame
     m = []
     data = []
     x = []
     for tweet in tweets:
-        j = emoji.demojize(tweet.full_text)
+        j = emoji.demojize(tweet)#.full_text
 
-        data.append([tweet.user.screen_name, j])
+        data.append([tweet, j])#.user.screen_name
         x.append(j)
 
     
@@ -104,19 +116,19 @@ def chatbot_response():
             return "ROBO: You are welcome.."
         else:
             if(greeting(msg)!=None):
-                return "ROBO: "+greeting(msg)
+                return greeting(msg)
             else:
                 try:
                     xls.drop(xls.tail(1).index, inplace=True)
         
-                    return "ROBO: "+response(msg)
+                    return response(msg)
                 except:
                     return "I don't understand"
                     
                 
     else:
         
-        return "ROBO: Bye! take care.."
+        return "Bye! take care.."
 
 
 
@@ -127,7 +139,7 @@ def pred():
     if request.method == 'POST':
         query = request.form['query']
         count = request.form['num']
-        fetched_tweets = get_tweets(api, query, count)
+        fetched_tweets = get_tweets(query, count)#api parameter was present
         return render_template('result.html', result=fetched_tweets)
 
 
@@ -151,17 +163,17 @@ def pred1():
 
 if __name__ == '__main__':
 
-    consumerKey = "kyRQF7cFHe4qgecZG0knT26xM"
-    consumerSecret = "ksQcnURKquWNOeiq1NBUmRvF1Q3mntwK5GS1Z8idP55s9R5F9j"
-    accessToken = "1574783882091642880-xDPEEHEYJp1I7PVuoVdYSJjqdlh2Ct"
-    accessTokenSecret = "sKCjx2Q3iGlIg1FctYGbLdpy5jgDGkpIbIyNwgruhuMQo"
+    '''consumerKey = "zEfWsTrkCpA3Ay2WjXQwvGZ3p"
+    consumerSecret = "MTaaG99IpQMNWtLvScIgtKWGbW7awHimYWAuqjZxwgh3UtPR7U"
+    accessToken = "1655613154703945733-hd7VhlyuJKzLGksdnRJh9ezfuQTIW3"
+    accessTokenSecret = "pAHe7b5OZP6ugRhIxarf18Cld6aLXAmu1n7l3r6BCBw7D"
 
     try:
         auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
         auth.set_access_token(accessToken, accessTokenSecret)
         api = tweepy.API(auth)
     except:
-        print("Error: Authentication Failed")
+        print("Error: Authentication Failed")'''
 
     app.debug = True
     app.run(host='localhost')
